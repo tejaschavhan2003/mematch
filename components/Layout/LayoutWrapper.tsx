@@ -2,13 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "@/components/Layout/AppSideBar";
-import { QuickGoalAccess } from "@/components/Layout/QuickGoalAccess";
+import { QuickGoalAccess } from "@/components/Home/QuickGoalAccess";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const hideLayout =
-    pathname === "/" || pathname === "/signin" || pathname === "/signup";
+    pathname === "/" || pathname === "/sign-in" || pathname === "/sign-up";
 
   if (hideLayout) {
     return <main className="w-full">{children}</main>;

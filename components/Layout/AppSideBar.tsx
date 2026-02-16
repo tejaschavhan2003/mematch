@@ -11,6 +11,8 @@ import {
   Trophy,
   LogIn,
   User,
+  icons,
+  FlameKindling,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -25,9 +27,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const navItems = [
-  { name: "Home", path: "/home/xyz", icon: Home },
+  { name: "Home", path: "/home", icon: Home },
+  { name: "Goals", path: "/goals", icon: FlameKindling },
   { name: "Explore Challanges", path: "/explore", icon: Compass },
-  { name: "Milestones", path: "/milestones", icon: Trophy },
   { name: "Profile", path: "/profile", icon: User, mobileOnly: true },
 ];
 

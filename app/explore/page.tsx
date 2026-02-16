@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import MilestoneFeed from "@/components/Home/MilestoneFeed";
+import MilestoneFeed from "@/components/Landing/MilestoneFeed";
 import { motion } from "framer-motion";
 import {
   Search,

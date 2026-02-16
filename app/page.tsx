@@ -10,8 +10,6 @@ import {
   Target,
   Calendar,
   Mail,
-  Github,
-  Instagram,
   Trophy,
   ArrowRight,
 } from "lucide-react";

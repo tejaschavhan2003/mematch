@@ -1,6 +1,37 @@
+// generator client {
+//   provider = "prisma-client"
+//   output   = "../lib/generated/prisma"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+// }
+
+// model User {
+//   id        String   @id @default(cuid())
+//   email     String   @unique
+//   username  String?
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   posts     Post[]
+// }
+
+// model Post {
+//   id        String   @id @default(cuid())
+//   title     String
+//   content   String?
+//   published Boolean  @default(false)
+//   authorId  String
+//   author    User     @relation(fields: [authorId], references: [id])
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -8,21 +39,107 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  username  String?
+  id       String  @id @default(cuid())
+  username String  @unique
+  email    String  @unique
+  password String // Hashed password
+  avatar   String?
+  bio      String?
+  totalXP  Int     @default(0)
+
+  // Relations
+  goals    Goal[]
+  posts    Post[]
+  comments Comment[]
+  likes    Like[]
+
+  // Social Connections (Self-relation)
+  followedBy User[] @relation("UserFollows")
+  following  User[] @relation("UserFollows")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  posts     Post[]
+}
+
+model Goal {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  category    String? // e.g., Fitness, Coding
+  status      GoalStatus @default(ACTIVE)
+  progress    Int        @default(0) // 0 to 100
+  deadline    DateTime?
+
+  // Relations
+  userId     String
+  user       User        @relation(fields: [userId], references: [id])
+  milestones Milestone[]
+  posts      Post[] // Link posts to specific goals for progress updates
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Milestone {
+  id     String  @id @default(cuid())
+  task   String
+  isDone Boolean @default(false)
+
+  goalId String
+  goal   Goal   @relation(fields: [goalId], references: [id], onDelete: Cascade)
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  id       String   @id @default(cuid())
+  content  String?
+  mediaUrl String? // Image/Video of progress
+  type     PostType @default(UPDATE)
+
+  // Relations
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  goalId String? // Optional: Post can exist without a specific goal
+  goal   Goal?   @relation(fields: [goalId], references: [id])
+
+  comments Comment[]
+  likes    Like[]
+
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  id   String @id @default(cuid())
+  text String
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId]) // Prevent double liking
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+}
+
+enum PostType {
+  UPDATE // General progress
+  ACHIEVEMENT // Automatically generated when GoalStatus -> COMPLETED
+  ANNOUNCEMENT
 }
